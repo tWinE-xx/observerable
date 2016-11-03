@@ -1,7 +1,7 @@
 const Rx = require('rxjs');
 const util = require('util');
 var qs = require('querystring');
-var bodyParser = function(req, res, next){
+var requestParser = function(req, res, next){
     if (req.method == 'POST') {
         var body = '';
 
@@ -35,4 +35,4 @@ var bodyParser = function(req, res, next){
     }
 }
 
-module.exports = bodyParser;
+module.exports = requestParser;

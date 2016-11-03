@@ -1,7 +1,6 @@
-var addRequestHelpers = function(req, res, next){
+var extendResponse = function(req, res, next){
     res.json = function(statusCode, data){
         res.statusCode = 200;
-        //TODO:
         //res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(data));
     }
@@ -15,4 +14,4 @@ var addRequestHelpers = function(req, res, next){
     return next();
 }
 
-module.exports = addRequestHelpers;
+module.exports = extendResponse;

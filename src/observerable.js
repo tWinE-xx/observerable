@@ -35,7 +35,9 @@ Observerable.start = function(port, domain){
     }).listen(port, domain, () => {
         console.log(`Server running at http://${domain}:${port}/`);
         //add default filters
-        this.registerFilter(require('../example/filters/addRequestHelpers'));
+        this.registerFilter(require('./extendRequest'));
+        this.registerFilter(require('./extendResponse'));
+        this.registerFilter(require('./requestParser'));
         //react to request
         requests_
             .subscribe(e=>{
