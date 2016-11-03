@@ -1,0 +1,17 @@
+{
+  "name": "observerable",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./lib/observerable.js",
+  "scripts": {
+    "test": "mocha test/**/*.js"
+  },
+  "author": "Yuval Birenboum <bir.yuval@gmail.com> (https://il.linkedin.com/in/yuval-birenboum-b3565b12)",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^3.1.2"
+  },
+  "dependencies": {
+    "rxjs": "^5.0.0-rc.1"
+  }
+}
