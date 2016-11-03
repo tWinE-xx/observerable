@@ -1,16 +1,9 @@
 var extendRequest = function(req, res, next){
-    res.json = function(statusCode, data){
-        res.statusCode = 200;
-        //res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(data));
+
+    req.param = function(name){
+        return req.params[name];
     }
-    /*
-    res.param = function(name){
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(data));
-    }
-    */
+    
     return next();
 }
 
