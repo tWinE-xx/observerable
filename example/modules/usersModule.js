@@ -2,7 +2,7 @@ const UsersModule = function(module){
     
     module.get('/route3')
         .map(e=>{
-            e.res.json(200, {params: e.req.params, param_a: e.req.param('a')});
+            e.res.json(200, {params: e.req.params, param_a: e.req.params['a']});
         })
         .subscribe();
 

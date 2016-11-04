@@ -1,5 +1,5 @@
 const util = require('util');
-const Queue = require('./queue');
+const Queue = require('../helpers/Queue');
 
 var filters; 
 

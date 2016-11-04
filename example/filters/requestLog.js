@@ -1,6 +1,5 @@
 var requestLog = function(req, res, next){
-    console.log('requestLog', req.url);
-    console.log(`${new Date().toDateString()} ${req.method} ${req.url} data: ${req.body}`);
+    console.log(`${new Date().toDateString()} | ${req.method} | ${req.url} | body: ${req.body} | params: ${JSON.stringify(req.params)} | cookies: ${JSON.stringify(req.cookies)}`);
     return next();
 }
 

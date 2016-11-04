@@ -3,8 +3,8 @@ const Rx = require('rxjs');
 const http = require('http');
 const util = require('util');
 const requests_ = new Rx.Subject();
-const RouteManager = require('./routeManager');
-const FilterManager = require('./filterManager');
+const RouteManager = require('./managers/RouteManager');
+const FilterManager = require('./managers/FilterManager');
 const HttpVerbs = require('./enums').HttpVerb;
 const Observerable = {};
 //
@@ -27,21 +27,23 @@ Observerable.start = function(port, domain){
     if (util.isNullOrUndefined(port) || port == '' || !util.isNumber(port))
         port = 8080; 
     if (util.isNullOrUndefined(domain) || domain == '')
-        domain = 'localhost';  
+        domain = 'localhost'; 
+    //add default filters
+    this.filter(require('./parsers/CookieParser'));
+    this.filter(require('./parsers/SessionParser'));
+    this.filter(require('./parsers/RequestBodyParser'));
+    this.filter(require('./parsers/RequestParamParser'));
+    this.filter(require('./parsers/ResponseJsonParser')); 
     //create http server
     http.createServer((req, res) => {
         //delegate request handling
         requests_.next({ req: req, res: res });
     }).listen(port, domain, () => {
         console.log(`Server running at http://${domain}:${port}/`);
-        //add default filters
-        this.registerFilter(require('./extendRequest'));
-        this.registerFilter(require('./extendResponse'));
-        this.registerFilter(require('./requestParser'));
         //react to request
         requests_
             .subscribe(e=>{
-                //run user filters
+                //run application level filters
                 FilterManager.execute(e.req, e.res, ()=>{
                     var subject = RouteManager.get(getRequestRoute(e.req), getRequestVerb(e.req));
                     if (subject instanceof Error) 
@@ -62,7 +64,7 @@ Observerable.start = function(port, domain){
     Output: 
         Observerable
 */
-Observerable.registerFilter = function(filterName, Fn) {
+Observerable.filter = function(filterName, Fn) {
     FilterManager.register(filterName, Fn);
     return this;
 }
@@ -75,7 +77,7 @@ Observerable.registerFilter = function(filterName, Fn) {
     Output: 
         Observerable
 */
-Observerable.registerModule = function(baseRoute, module){
+Observerable.module = function(baseRoute, module){
     module(createModule(baseRoute));
     return this;
 }
