@@ -13,8 +13,8 @@ var SessionParser = function(req, res, next){
     var sessionId = SessionManager.create(req, res);
     //return sessionId to client
     res.setHeader('Set-Cookie', 'sessionId='+sessionId+';path=/;expires='+new Date(new Date().getTime()+1000*60*30).toUTCString());
-    //return new session
-    req.session = SessionManager.get(sessionId);
+    //
+    req.sessionId = sessionId;
     return next();
 }
 

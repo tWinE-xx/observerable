@@ -1,7 +1,9 @@
-const Observerable = require('../src/observerable')();
+const Observerable = require('../src/Observerable')();
 
 Observerable.start(8080, 'localhost')
-    .filter(require('./filters/requestLog'))
+    .static('www')
+    .filter(require('./filters/Csrf'))
+    .filter(require('./filters/RequestLog'))
     .module('/users', require('./modules/usersModule'))
     .module('/login', require('./modules/loginModule'));
 

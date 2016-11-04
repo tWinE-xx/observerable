@@ -1,35 +1,39 @@
 const util = require('util');
+const Utils = require('../helpers/Utils');
 
-var session; 
+var sessions; 
 
 function SessionManager(){
-    session = {};
+    sessions = {};
 }
 
 SessionManager.prototype.create = function(){    
-    var sessionId = guid();
-    session[sessionId] = {};
+    var sessionId = Utils.Guid();
+    sessions[sessionId] = {};
     return sessionId;
 }
 
 SessionManager.prototype.all = function(){
-    return session;
+    return sessions;
 }
 
 SessionManager.prototype.get = function(sessionId){
     //validations
     if (util.isNullOrUndefined(sessionId)) return new Error("no sessionId provided");
-    return session[sessionId];
+    var userSession = sessions[sessionId];
+    if (util.isNullOrUndefined(userSession)){
+        userSession = sessions[sessionId] = {};
+    }    
+    return userSession;
+}
+
+SessionManager.prototype.add = function(sessionId, key, value){
+    //validations
+    if (util.isNullOrUndefined(sessionId)) return new Error("no sessionId provided");
+    if (util.isNullOrUndefined(sessions[sessionId])) return new Error(`no session exists from sessionId ${sessionId}`);
+    sessions[sessionId][key] = value;
+    return sessionId;
 }
 
 module.exports = new SessionManager();
 
-function guid() {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
-  }
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-    s4() + '-' + s4() + s4() + s4();
-}

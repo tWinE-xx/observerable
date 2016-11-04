@@ -1,9 +1,10 @@
 const Rx = require('rxjs');
 const util = require('util');
 var qs = require('querystring');
+const HttpVerbs = require('../enums').HttpVerb;
 var RequestBodyParser = function(req, res, next){
     //console.log('RequestBodyParser');
-    if (req.method == 'POST') {
+    if (req.method == HttpVerbs.POST) {
         var body = '';
 
         req.on('data', function (data) {

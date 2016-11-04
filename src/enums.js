@@ -1,6 +1,6 @@
 const httpVerb = {
-    'GET': 0,
-    'POST': 1
+    GET: 'GET',
+    POST: 'POST'
 }
 
 module.exports = {

@@ -5,6 +5,7 @@ const util = require('util');
 const requests_ = new Rx.Subject();
 const RouteManager = require('./managers/RouteManager');
 const FilterManager = require('./managers/FilterManager');
+const SessionManager = require('./managers/SessionManager');
 const HttpVerbs = require('./enums').HttpVerb;
 const Observerable = {};
 //
@@ -34,6 +35,7 @@ Observerable.start = function(port, domain){
     this.filter(require('./parsers/RequestBodyParser'));
     this.filter(require('./parsers/RequestParamParser'));
     this.filter(require('./parsers/ResponseJsonParser')); 
+    this.filter(require('./filters/ServeStaticFiles'));
     //create http server
     http.createServer((req, res) => {
         //delegate request handling
@@ -55,6 +57,27 @@ Observerable.start = function(port, domain){
     });
     return this;
 }
+/*
+    Summary:
+        expose static file library to serve static files
+    Input:
+        path: path to static file folder
+    Output: 
+        Observerable
+*/
+Observerable.static = function(path){
+    this.staticPath = path;
+    return this;
+}
+/*
+    Summary:
+        expose sessionManager for session operations
+    Input:
+       na
+    Output: 
+        SessionManager
+*/
+Observerable.session = SessionManager;
 /*
     Summary:
         filter registration 
