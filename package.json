@@ -1,7 +1,7 @@
 {
   "name": "observerable",
   "version": "1.0.0",
-  "description": "",
+  "description": "obSERVERable is a reactive alternative to Express (using rx.js)",
   "main": "./lib/observerable.js",
   "scripts": {
     "test": "mocha test/**/*.js"
@@ -12,6 +12,30 @@
     "mocha": "^3.1.2"
   },
   "dependencies": {
-    "rxjs": "^5.0.0-rc.1"
+    "rxjs": "^5.0.0-rc.1",
+    "winston": "^2.3.0"
+  },
+  "files": [
+    "README.md",
+    "package.json",
+    "LICENSE",
+    "index.js",
+    "lib/"
+  ],
+  "keywords": [
+    "api",
+    "reactive",
+    "app",
+    "web",
+    "rest",
+    "restful",
+    "framework"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tWinE-xx/observerable.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tWinE-xx/observerable/issues"
   }
 }
