@@ -1,4 +1,4 @@
-const Session = require('../../lib/Observerable')().session;
+const Session = require('observerable')().session;
 
 var Csrf = function(req, res, next){
     switch (req.method) {

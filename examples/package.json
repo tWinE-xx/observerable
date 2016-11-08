@@ -1,0 +1,15 @@
+{
+  "name": "examples",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yuval Birenboum <bir.yuval@gmail.com> (https://il.linkedin.com/in/yuval-birenboum-b3565b12)",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^2.2.11",
+    "rx-http-request": "^1.2.0"
+  }
+}
