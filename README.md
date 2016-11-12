@@ -1,10 +1,13 @@
 # obSERVERable is a reactive alternative to Express (using rx.js)
 
+## Bringing the power of streams to the server
+
 I love node.js and Express but I also love reactive programming.
 Express is a visionary in many ways but it is not a native fit to my reactive programming style..  
 obSERVERable is a server which allows you to program reactive (native) api (and applications of course).
 
 With Express we are used to define an api like this:
+
 ```js
 var express = require('express')
 var app = express()
@@ -15,23 +18,61 @@ app.get('/about', function (req, res) {
 ```
 
 With obSERVERable you do stuff reactive:
-```js
 
-//TODO - show example geting data from db
+```js
+const Observerable = require('../../lib/Observerable')();
+const visualV8 = require('visualv8')();
+
+//define application
+Observerable.start(8080, 'localhost')
+    .static('www')//static content folder
+    .filter(require('./filters/Csrf'))//your own middlewares
+    .filter(require('./filters/RequestLog'))//your own middlewares
+    .module('/users', require('./modules/usersModule'))//module developed
+    .module('/login', require('./modules/loginModule'));//module developed
+
+//a module you develop
+const UsersModule = function(module){
+    //cool reactive composition
+    var usersAndOrders = Rx.Observable.zip(//aggragation of api resources 
+        RxHttpRequest.get('http://localhost:8080/www/data/users.json').map(r=>JSON.parse(r.body)),
+        RxHttpRequest.get('http://localhost:8080/www/data/orders.json').map(r=>JSON.parse(r.body))
+    );
+
+    module
+        .get('/')//returns observable for '/' path gor GET
+        .subscribe(request=>{
+            usersAndOrders.subscribe(zipResult=>{
+                var users = zipResult[0],
+                    orders = zipResult[1];
+                request.json(200, {users: users, orders: orders});
+            });
+        }); 
+
+    module.post('/new')//returns observable for '/' path gor POST
+        .subscribe(request=>{
+            request.json(200, request.body);
+        }); 
+}
+
+module.exports = UsersModule;
 
 ```
 
 # Installation
+
 ```js
 npm install observerable
 ```
 
 ## Features
 
-    * ..
-    * ..
-    * ..
-    * ..
+    * Reactive stream based, you get a stream not request response
+    * Module based development
+    * Application level filters (like express middleware)
+    * Session Management
+    * Cookie Management
+    * More to come..
 
 ## Install & run the sample application (usage demo) 
     
@@ -44,7 +85,7 @@ Then access [http://localhost:8080](http://localhost:8080)
 ## create server
 
 ```js
-const Observerable = require('../src/Observerable')();
+const Observerable = require('observerable')();
 
 Observerable.start(8080, 'localhost')//configure and start your server
     .static('www')//serve static files from a directory of you choosing
@@ -66,18 +107,6 @@ const UsersModule = function(module){
              e.res.json(200, {user: e.req.body});//use response object to return response which includes the request body data
         })
         .subscribe();
-    
-    //aggregation example using zip and rx-http-request module (npm)
-    module
-        .get('/orders')
-        .zip(//aggragation of api resources 
-            RxHttpRequest.get('http://localhost:8080/www/data/users.json').map(r=>JSON.parse(r.body)),
-            RxHttpRequest.get('http://localhost:8080/www/data/orders.json').map(r=>JSON.parse(r.body))
-        )
-        .subscribe(e=>{
-            var req = e[0].req, res = e[0].res, users = e[1], orders = e[2];
-            res.json(200, {users: users, orders: orders})
-        });
 }
 
 module.exports = UsersModule;
