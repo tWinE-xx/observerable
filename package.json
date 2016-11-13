@@ -1,6 +1,6 @@
 {
   "name": "observerable",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "obSERVERable is a reactive alternative to Express (using rx.js)",
   "main": "./lib/observerable.js",
   "scripts": {
