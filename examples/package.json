@@ -12,6 +12,7 @@
   "dependencies": {
     "mongodb": "^2.2.11",
     "rx-http-request": "^1.2.0",
+    "rx-mongodb": "^1.0.0",
     "visualv8": "latest"
   }
 }

@@ -1,16 +1,22 @@
 const LoginModule = function(module){
     
     module.get('/verify')
-        .map(request=>{
-            request.json(200, {data: request.params});
-        })
-        .subscribe();
+        .flatMap(request=>request.json(200, request.params))
+        .subscribe(request=>{
+            lastReturn=>{},
+            err=>request
+                    .json(500, err)
+                    .subscribe()
+        }); 
 
     module.post('/auth')
-        .map(request=>{
-             request.json(200, {data: request.body, v:1});
-        })
-        .subscribe();
+        .flatMap(request=>request.json(200, request.body))
+        .subscribe(request=>{
+            lastReturn=>{},
+            err=>request
+                    .json(500, err)
+                    .subscribe()
+        });
 }
 
 module.exports = LoginModule;

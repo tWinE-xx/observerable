@@ -33,26 +33,50 @@ Observerable.start(8080, 'localhost')
 
 //a module you develop
 const UsersModule = function(module){
-    //cool reactive composition
-    var usersAndOrders = Rx.Observable.zip(//aggragation of api resources 
-        RxHttpRequest.get('http://localhost:8080/www/data/users.json').map(r=>JSON.parse(r.body)),
-        RxHttpRequest.get('http://localhost:8080/www/data/orders.json').map(r=>JSON.parse(r.body))
-    );
-
+    
+    //cool reactive rest resources composition
     module
-        .get('/')//returns observable for '/' path gor GET
+        .get('/')//returns observable for '/' path
         .subscribe(request=>{
-            usersAndOrders.subscribe(zipResult=>{
+            Rx.Observable.zip(//aggragation of api resources 
+                RxHttpRequest.get('http://localhost:8080/www/data/users.json').map(r=>JSON.parse(r.body)),
+                RxHttpRequest.get('http://localhost:8080/www/data/orders.json').map(r=>JSON.parse(r.body))
+            ).subscribe(zipResult=>{
                 var users = zipResult[0],
                     orders = zipResult[1];
-                request.json(200, {users: users, orders: orders});
+                request
+                    .json(200, {users: users, orders: orders})
+                    .subscribe();
             });
         }); 
 
-    module.post('/new')//returns observable for '/' path gor POST
+    //simple loop iof data
+    module.post('/new')
+        .flatMap(request=>request.json(200, request.body))
         .subscribe(request=>{
-            request.json(200, request.body);
-        }); 
+            lastReturn=>{},
+            err=>request
+                    .json(500, err)
+                    .subscribe()
+        });  
+
+    //database integration
+    //using rx-mongodb a reactive mongodb libarary based on rxjs
+     module.post('/save')//returns observable for '/save' path gor POST
+        .subscribe(request=>{
+            rxMongodb
+                .connect(connectionString) 
+                .flatMap(db=>rxMongodb.insert(collectionName, request.body))
+                .flatMap(insertResult=>request.json(200, insertResult))
+                .flatMap(response=>rxMongodb.close())
+                .subscribe(
+                    lastReturn=>{},
+                    err=>request
+                            .json(500, err)
+                            .subscribe()
+                );
+        });
+    
 }
 
 module.exports = UsersModule;
@@ -95,18 +119,28 @@ Observerable.start(8080, 'localhost')//configure and start your server
 ```
 
 ## program modules
+
 ### modules expose streams by http verb (get and post) and routes 
 ```js
 const UsersModule = function(module){
     
-    module.get('/details/info')//listens to get requests on http://<domain>/users/info?id=1
-        .subscribe(e=>e.res.json(200, {id: e.req.params});//use response object to return response with quesry params 
+    module.get('/details/info')//listens to get requests on http://<domain>:<port>/users/info?id=1
+        .flatMap(request=>request.json(200, request.params))//return querystring params sent (loop)
+        .subscribe(request=>{
+            lastReturn=>{},
+            err=>request
+                    .json(500, err)
+                    .subscribe()
+        });
 
-    module.post('/new')//listens to post requests on http://<domain>/users/auth
-        .map(e=>{
-             e.res.json(200, {user: e.req.body});//use response object to return response which includes the request body data
-        })
-        .subscribe();
+    module.post('/auth')//listens to post requests on http://<domain>:<port>/users/auth
+        .flatMap(request=>request.json(200, request.body))//return body data sent (loop)
+        .subscribe(request=>{
+            lastReturn=>{},
+            err=>request
+                    .json(500, err)
+                    .subscribe()
+        });
 }
 
 module.exports = UsersModule;
